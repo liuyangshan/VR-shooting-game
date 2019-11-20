@@ -5,9 +5,15 @@ using UnityEngine;
 
 public class enemy : MonoBehaviour
 {
-
+    public GameObject end, start; // The gun start and end point
     public GameObject[] target;
     public GameObject player;
+
+    public GameObject bulletHole;
+
+    public float health = 100;
+
+
     private float fireTimer;
     private bool enemySawPlayer;
     private Vector3 targetPos;
@@ -32,48 +38,52 @@ public class enemy : MonoBehaviour
         //print(playerEnemyDis);
 
 
-        if (enemySawPlayer == false)
+        
+        if (Vector3.Dot(enemyForward, playerPos) > 0.5)
         {
-            if (Vector3.Dot(enemyForward, playerPos) > 0.5)
-            {
-                print("In print A");
-                targetPos = player.transform.position;
-                enemySawPlayer = true;
+            //print("In print A");
+            targetPos = player.transform.position;
+            enemySawPlayer = true;
 
-            }
-            else
-            {
-                targetPos = new Vector3(target[index].transform.position.x, transform.position.y, target[index].transform.position.z);
+        }
+        else
+        {
+            targetPos = new Vector3(target[index].transform.position.x, transform.position.y, target[index].transform.position.z);
 
-            }
         }
         
-
-
+        
 
         if (playerEnemyDis >= 10.0f && enemySawPlayer == true)
         {
             GetComponent<Animator>().SetBool("run", true);
             fireTimer += Time.deltaTime;
 
-            print(fireTimer);
-            print(playerEnemyDis);
+            //print(fireTimer);
+            //print(playerEnemyDis);
 
             if (fireTimer > 0.2f)
             {
-                print("set fire trigger to True");
+                //print("set fire trigger to True");
                 GetComponent<Animator>().SetTrigger("fire");
                 fireTimer = 0;
             }
 
         }
 
+        
         if (playerEnemyDis < 10.0f)
         {
             GetComponent<Animator>().SetBool("run", false);
 
         }
 
+
+        if (health == 0)
+        {
+            GetComponent<Animator>().SetBool("dead", true);
+
+        }
 
         Quaternion desiredRotation = Quaternion.LookRotation(targetPos - transform.position);
         transform.rotation = Quaternion.Lerp(transform.rotation, desiredRotation, Time.deltaTime);
@@ -91,5 +101,23 @@ public class enemy : MonoBehaviour
             }
         }
 
+    }
+
+
+    void shotDetection() // Detecting the object which player shot 
+    {
+        RaycastHit rayHit;
+        if (Physics.Raycast(end.transform.position, (end.transform.position - start.transform.position), out rayHit, 100.0f))
+        {
+            if (rayHit.transform.tag == "player")
+            {
+                player.GetComponent<GunVR>().health -= 20;
+                print(player.GetComponent<GunVR>().health);
+            }
+            else
+            {
+                Instantiate(bulletHole, rayHit.point + rayHit.transform.up * 0.01f, rayHit.transform.rotation);
+            }
+        }
     }
 }
