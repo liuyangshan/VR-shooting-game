@@ -34,14 +34,12 @@ public class enemy : MonoBehaviour
         // detect player
         Vector3 enemyForward = transform.forward;
         Vector3 playerPos = (player.transform.position - transform.position).normalized;
-        float playerEnemyDis = Vector3.Distance(playerPos, transform.position);
-        //print(playerEnemyDis);
+        //float playerEnemyDis = Vector3.Distance(playerPos, transform.position);
+        float playerEnemyDis = Vector3.Distance(player.transform.position, transform.position);
+        //print(health);
 
-
-        
         if (Vector3.Dot(enemyForward, playerPos) > 0.5)
         {
-            //print("In print A");
             targetPos = player.transform.position;
             enemySawPlayer = true;
 
@@ -57,66 +55,70 @@ public class enemy : MonoBehaviour
         if (playerEnemyDis >= 10.0f && enemySawPlayer == true)
         {
             GetComponent<Animator>().SetBool("run", true);
-            fireTimer += Time.deltaTime;
+        }
 
-            //print(fireTimer);
-            //print(playerEnemyDis);
+        if (playerEnemyDis < 10.0f && enemySawPlayer == true && health > 0)
+        {
+            GetComponent<Animator>().SetBool("run", false);
+            fireTimer += Time.deltaTime;
 
             if (fireTimer > 0.2f)
             {
-                //print("set fire trigger to True");
+                print("set fire trigger to True");
                 GetComponent<Animator>().SetTrigger("fire");
+                shotDetection();
                 fireTimer = 0;
             }
-
         }
 
-        
-        if (playerEnemyDis < 10.0f)
-        {
-            GetComponent<Animator>().SetBool("run", false);
-
-        }
-
-
-        if (health == 0)
+        if (health <= 0)
         {
             GetComponent<Animator>().SetBool("dead", true);
+            GetComponent<Animator>().SetBool("run", false);
 
         }
 
         Quaternion desiredRotation = Quaternion.LookRotation(targetPos - transform.position);
         transform.rotation = Quaternion.Lerp(transform.rotation, desiredRotation, Time.deltaTime);
 
-        Vector3 enemyPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
-        float dis = Vector3.Distance(targetPos, enemyPos);
-
-        if (dis < 1)
+        if (enemySawPlayer != true)
         {
-            index += 1;
-         
-            if (index == target.Length)
+            Vector3 enemyPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+            float dis = Vector3.Distance(targetPos, enemyPos);
+
+            if (dis < 1)
             {
-                index = 0;
+                index += 1;
+
+                if (index == target.Length)
+                {
+                    index = 0;
+                }
             }
         }
+        
 
     }
 
+    public void Being_shot(float damage) // getting hit from enemy
+    {
+        player.GetComponent<GunVR>().health -= damage;
+        print(player.GetComponent<GunVR>().health);
+    }
 
     void shotDetection() // Detecting the object which player shot 
     {
         RaycastHit rayHit;
         if (Physics.Raycast(end.transform.position, (end.transform.position - start.transform.position), out rayHit, 100.0f))
         {
-            if (rayHit.transform.tag == "player")
+            print(rayHit.transform.tag);
+            if (rayHit.transform.tag == "Player")
             {
-                player.GetComponent<GunVR>().health -= 20;
-                print(player.GetComponent<GunVR>().health);
+                Being_shot(10);
             }
             else
             {
-                Instantiate(bulletHole, rayHit.point + rayHit.transform.up * 0.01f, rayHit.transform.rotation);
+                //Instantiate(bulletHole, rayHit.point + rayHit.transform.up * 0.01f, rayHit.transform.rotation);
             }
         }
     }
