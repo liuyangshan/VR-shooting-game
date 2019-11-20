@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,6 +9,7 @@ public class GunVR : MonoBehaviour {
 
     public GameObject end, start; // The gun start and end point
     public GameObject gun;
+    public GameObject enemy;
     public Animator animator;
     
     public GameObject spine;
@@ -41,7 +42,8 @@ public class GunVR : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        
+        //print(health);
+
         // Cool down times
         if (gunShotTime >= 0.0f)
         {
@@ -90,14 +92,23 @@ public class GunVR : MonoBehaviour {
             animator.SetBool("reload", false);
         }
         updateText();
-       
+
+        
+        if (health <= 0)
+        {
+            GetComponent<Animator>().SetBool("dead", true);
+            isDead = true;
+
+        }
+
     }
 
   
 
     public void Being_shot(float damage) // getting hit from enemy
     {
-        
+        enemy.GetComponent<enemy>().health -= damage;
+        print(enemy.GetComponent<enemy>().health);
     }
 
     public void ReloadEvent(int eventNumber) // appearing and disappearing the handMag and gunMag
@@ -135,9 +146,10 @@ public class GunVR : MonoBehaviour {
         RaycastHit rayHit;
         if (Physics.Raycast(end.transform.position, (end.transform.position - start.transform.position), out rayHit, 100.0f))
         {
+            print(rayHit.transform.tag);
             if (rayHit.transform.tag == "enemy")
             {
-
+                Being_shot(10);
             }
             else
             {
@@ -153,6 +165,7 @@ public class GunVR : MonoBehaviour {
         GameObject tempMuzzle = Instantiate(muzzlePrefab, end.transform.position, end.transform.rotation);
         tempMuzzle.GetComponent<ParticleSystem>().Play();
         Destroy(tempMuzzle, 2.0f);
+
     }
 
 }
