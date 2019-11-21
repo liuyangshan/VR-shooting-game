@@ -8,6 +8,7 @@ public class enemy : MonoBehaviour
     public GameObject end, start; // The gun start and end point
     public GameObject[] target;
     public GameObject player;
+    public GameObject gun;
 
     public GameObject bulletHole;
 
@@ -65,19 +66,29 @@ public class enemy : MonoBehaviour
 
             if (fireTimer > 0.2f)
             {
-                //print("set fire trigger to True");
-
                 GetComponent<Animator>().SetTrigger("fire");
                 shotDetection();
                 fireTimer = 0;
             }
         }
 
+        if (health < 100)
+        {
+            targetPos = player.transform.position;
+            enemySawPlayer = true;
+        }
+
+
         if (health <= 0)
         {
             GetComponent<Animator>().SetBool("dead", true);
             GetComponent<Animator>().SetBool("run", false);
             GetComponent<CharacterController>().enabled = false;
+
+            gun.GetComponent<Rigidbody>().isKinematic = false;
+            gun.GetComponent<BoxCollider>().enabled = true;
+            gun.transform.parent = null;
+            
 
         }
 
@@ -128,7 +139,7 @@ public class enemy : MonoBehaviour
             //print(rayHit.transform.tag);
             if (rayHit.transform.tag == "Player")
             {
-                Being_shot(10);
+                Being_shot(20);
             }
             else
             {
