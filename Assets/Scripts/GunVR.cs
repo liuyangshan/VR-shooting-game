@@ -11,7 +11,8 @@ public class GunVR : MonoBehaviour {
     public GameObject gun;
     public GameObject enemy;
     public Animator animator;
-    
+
+    public GameObject head;
     public GameObject spine;
     public GameObject handMag;
     public GameObject gunMag;
@@ -28,6 +29,7 @@ public class GunVR : MonoBehaviour {
 
     public Text magBullets;
     public Text remainingBullets;
+    public Text healthDis;
 
     int magBulletsVal = 30;
     int remainingBulletsVal = 90;
@@ -97,9 +99,11 @@ public class GunVR : MonoBehaviour {
         if (health <= 0)
         {
             GetComponent<Animator>().SetBool("dead", true);
+            GetComponent<CharacterMovement>().isDead = true;
             isDead = true;
             GetComponent<CharacterController>().enabled = false;
 
+            head.GetComponent<SkinnedMeshRenderer>().enabled = true;
 
         }
 
@@ -141,6 +145,7 @@ public class GunVR : MonoBehaviour {
     {
         magBullets.text = magBulletsVal.ToString() ;
         remainingBullets.text = remainingBulletsVal.ToString();
+        healthDis.text = health.ToString();
     }
 
     void shotDetection() // Detecting the object which player shot 
@@ -151,7 +156,7 @@ public class GunVR : MonoBehaviour {
             //print(rayHit.transform.tag);
             if (rayHit.transform.tag == "enemy")
             {
-                Being_shot(10);
+                Being_shot(20);
             }
             else
             {
