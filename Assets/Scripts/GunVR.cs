@@ -98,6 +98,8 @@ public class GunVR : MonoBehaviour {
         {
             GetComponent<Animator>().SetBool("dead", true);
             isDead = true;
+            GetComponent<CharacterController>().enabled = false;
+
 
         }
 
@@ -108,7 +110,7 @@ public class GunVR : MonoBehaviour {
     public void Being_shot(float damage) // getting hit from enemy
     {
         enemy.GetComponent<enemy>().health -= damage;
-        print(enemy.GetComponent<enemy>().health);
+        //print(enemy.GetComponent<enemy>().health);
     }
 
     public void ReloadEvent(int eventNumber) // appearing and disappearing the handMag and gunMag
@@ -146,7 +148,7 @@ public class GunVR : MonoBehaviour {
         RaycastHit rayHit;
         if (Physics.Raycast(end.transform.position, (end.transform.position - start.transform.position), out rayHit, 100.0f))
         {
-            print(rayHit.transform.tag);
+            //print(rayHit.transform.tag);
             if (rayHit.transform.tag == "enemy")
             {
                 Being_shot(10);
