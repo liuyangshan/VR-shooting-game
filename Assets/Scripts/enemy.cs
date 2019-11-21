@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+//using System.Collections;
+//using System.Collections.Generic;
 using UnityEngine;
 
 public class enemy : MonoBehaviour
@@ -11,8 +11,9 @@ public class enemy : MonoBehaviour
 
     public GameObject bulletHole;
 
-    public float health = 100;
 
+    public float health = 100;
+    //public Double spreadFactor = 0.02;
 
     private float fireTimer;
     private bool enemySawPlayer;
@@ -64,7 +65,8 @@ public class enemy : MonoBehaviour
 
             if (fireTimer > 0.2f)
             {
-                print("set fire trigger to True");
+                //print("set fire trigger to True");
+
                 GetComponent<Animator>().SetTrigger("fire");
                 shotDetection();
                 fireTimer = 0;
@@ -75,6 +77,7 @@ public class enemy : MonoBehaviour
         {
             GetComponent<Animator>().SetBool("dead", true);
             GetComponent<Animator>().SetBool("run", false);
+            GetComponent<CharacterController>().enabled = false;
 
         }
 
@@ -104,14 +107,25 @@ public class enemy : MonoBehaviour
     {
         player.GetComponent<GunVR>().health -= damage;
         print(player.GetComponent<GunVR>().health);
+        
     }
 
     void shotDetection() // Detecting the object which player shot 
     {
         RaycastHit rayHit;
-        if (Physics.Raycast(end.transform.position, (end.transform.position - start.transform.position), out rayHit, 100.0f))
+
+
+        float shootSpreadY = UnityEngine.Random.Range(0.8f, 1.0f);
+        float shootSpreadZ = UnityEngine.Random.Range(0.8f, 1.0f);
+
+        Vector3 tempEnd = new Vector3(end.transform.position.x, end.transform.position.y * shootSpreadY, end.transform.position.z * shootSpreadZ);
+        //Vector3 tempEnd = end.transform.position;
+
+
+
+        if (Physics.Raycast(end.transform.position, (tempEnd - start.transform.position), out rayHit, 100.0f))
         {
-            print(rayHit.transform.tag);
+            //print(rayHit.transform.tag);
             if (rayHit.transform.tag == "Player")
             {
                 Being_shot(10);
