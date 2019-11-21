@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,8 +34,12 @@ public class CharacterMovement : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         OVRInput.Update();
+
+        // Input.GetAxis
+
         // Getting touch-pad touch position
         Vector2 touchPos = OVRInput.Get(OVRInput.Axis2D.PrimaryTouchpad, OVRInput.Controller.RTrackedRemote);
+
 
         if (!isDead)
         {
